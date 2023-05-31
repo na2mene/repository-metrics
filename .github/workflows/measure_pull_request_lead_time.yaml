@@ -52,6 +52,7 @@ jobs:
             return leadTimeHour;
 
       - name: comment
+        shell: /usr/bin/bash {0}
         run: |
           set -x
           LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
@@ -65,6 +66,4 @@ jobs:
             LEAD_TIME_DAY_TEXT="${LEAD_TIME_DAY}日"
           fi
           COMMENT_TEXT="@${{ github.event.pull_request.user.login }} \n## 初回コミットからdevelopへマージされるまでのリードタイム\n${LEAD_TIME_DAY_TEXT} (${LEAD_TIME_HOUR_TEXT})でした、お疲れ様でした :ok2:"
-          set +e
           gh pr comment ${{ github.event.pull_request.html_url }} -b "$(echo -e "${COMMENT_TEXT}")"
-          set -e
