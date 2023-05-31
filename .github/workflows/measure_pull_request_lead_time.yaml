@@ -55,13 +55,13 @@ jobs:
         run: |
           set -x
           LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
-          LEAD_TIME_HOUR=3
+          LEAD_TIME_HOUR="3"
           if [ $LEAD_TIME_HOUR -eq 0 ]; then
             LEAD_TIME_HOUR_TEXT="1時間未満"
             LEAD_TIME_DAY_TEXT="0日"
           else
             LEAD_TIME_HOUR_TEXT="${LEAD_TIME_HOUR}時間"
-            LEAD_TIME_DAY=$(expr ${LEAD_TIME_HOUR} / 24)
+            LEAD_TIME_DAY=$(( ${LEAD_TIME_HOUR} / 24 ))
             LEAD_TIME_DAY_TEXT="${LEAD_TIME_DAY}日"
           fi
           COMMENT_TEXT="@${{ github.event.pull_request.user.login }} \n## 初回コミットからdevelopへマージされるまでのリードタイム\n${LEAD_TIME_DAY_TEXT} (${LEAD_TIME_HOUR_TEXT})でした、お疲れ様でした :ok2:"
