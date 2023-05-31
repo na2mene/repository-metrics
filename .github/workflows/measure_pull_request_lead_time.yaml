@@ -62,4 +62,4 @@ jobs:
             LEAD_TIME_DAY_TEXT="${LEAD_TIME_DAY}日"
           fi
           COMMENT_TEXT="@${{ github.event.pull_request.user.login }} \n## 初回コミットからdevelopへマージされるまでのリードタイム\n${LEAD_TIME_DAY_TEXT} (${LEAD_TIME_HOUR_TEXT})でした、お疲れ様でした :ok2:"
-          gh pr comment ${{ github.event.pull_request.html_url }} -b $(echo -e "${COMMENT_TEXT}")"
+          gh pr comment ${{ github.event.pull_request.html_url }} -b "$(echo -e "${COMMENT_TEXT}")"
