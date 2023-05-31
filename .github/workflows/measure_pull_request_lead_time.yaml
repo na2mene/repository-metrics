@@ -51,6 +51,13 @@ jobs:
       - name: comment
         run: |
           LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
-          LEAD_TIME_DAY=$(expr ${LEAD_TIME_HOUR} / 24)
+          if [ $LEAD_TIME_HOUR -eq 0 ]; then
+            LEAD_TIME_HOUR_TEXT="1時間未満"
+            LEAD_TIME_DAY_TEXT="0日"
+          else
+            LEAD_TIME_HOUR_TEXT="${LEAD_TIME_HOUR}時間"
+            LEAD_TIME_DAY=$(expr ${LEAD_TIME_HOUR} / 24)
+            LEAD_TIME_DAY_TEXT="${LEAD_TIME_DAY}日"
+          fi
           gh pr comment ${{ github.event.pull_request.html_url }} \
-          -b "@${{ github.event.pull_request.user.login }} \nリードタイムは${LEAD_TIME_DAY}日 (${LEAD_TIME_HOUR}時間)でした"
+          -b "@${{ github.event.pull_request.user.login }} \nリードタイムは${LEAD_TIME_DAY_TEXT}日 (${LEAD_TIME_HOUR_TEXT}時間)でした"
