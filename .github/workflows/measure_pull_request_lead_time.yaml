@@ -1,4 +1,5 @@
 name: Measure and comment on time from first commit to merge
+run-name: Measure ${{ github.actor }}'s time from first commit to merge
 
 on:
   pull_request:
