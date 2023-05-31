@@ -13,6 +13,8 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ github.token }}
       PR_NODE_ID: ${{ github.event.pull_request.node_id }}
+    permissions:
+      pull-requests: write
     steps:
       - name: checkout
         # NOTE: https://github.com/actions/checkout/releases/tag/v3.5.2
