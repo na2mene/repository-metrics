@@ -51,5 +51,6 @@ jobs:
       - name: comment
         run: |
           LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
+          LEAD_TIME_DAY=$(expr ${LEAD_TIME_HOUR} / 24)
           gh pr comment ${{ github.event.pull_request.html_url }} \
-          -b "@${{ github.event.pull_request.user.login }} \nリードタイムは$(expr ${LEAD_TIME_HOUR} / 24)日 (${LEAD_TIME_HOUR}時間)でした"
+          -b "@${{ github.event.pull_request.user.login }} \nリードタイムは${LEAD_TIME_DAY}日 (${LEAD_TIME_HOUR}時間)でした"
