@@ -1,0 +1,52 @@
+name: Measure and comment on time from first commit to merge
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [closed]
+jobs:
+  lead-time:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      PR_NODE_ID: ${{ github.event.pull_request.node_id }}
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: calc time
+        uses: actions/github-script@v5
+        id: calc_time
+        with:
+          script: |
+            const query = `
+              query($id: ID!) {
+                node(id: $id) {
+                  ... on PullRequest {
+                    mergedAt
+                    commits(first: 1) {
+                      nodes {
+                        commit {
+                          authoredDate
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            const result = await github.graphql(query, {id: process.env.PR_NODE_ID});
+            const mergedAt = new Date(result.node.mergedAt);
+            const authoredDate = new Date(result.node.commits.nodes[0].commit.authoredDate);
+            const leadTimeHour = (mergedAt - authoredDate) / 3600000;
+            return leadTimeHour;
+        env:
+          PR_NODE_ID: ${{ github.event.pull_request.node_id }}
+
+      - name: comment
+        run: |
+          LEAD_TIME_HOUR=${{ steps.calc_time.outputs.result }}
+          gh pr comment ${{ github.event.pull_request.html_url }} \
+          -b "@${{ github.event.pull_request.user.login }} お疲れ様でした!!:beer: リードタイムは$(expr ${LEAD_TIME_HOUR} / 24)日 (${LEAD_TIME_HOUR}時間)でした!!:tada:"
