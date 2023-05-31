@@ -52,7 +52,6 @@ jobs:
             return leadTimeHour;
 
       - name: comment
-        shell: /usr/bin/bash {0}
         run: |
           set -x
           LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
