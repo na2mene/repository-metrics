@@ -9,7 +9,7 @@ on:
 
 jobs:
   lead-time:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && !startsWith(github.event.pull_request.base.ref, 'epic')
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
