@@ -45,7 +45,7 @@ jobs:
             const result = await github.graphql(query, {id: process.env.PR_NODE_ID});
             const mergedAt = new Date(result.node.mergedAt);
             const authoredDate = new Date(result.node.commits.nodes[0].commit.authoredDate);
-            const leadTimeHour = (mergedAt - authoredDate) / 3600000;
+            const leadTimeHour = Math.round((mergedAt - authoredDate) / 3600000);
             return leadTimeHour;
 
       - name: comment
