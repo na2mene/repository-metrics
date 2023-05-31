@@ -56,6 +56,7 @@ jobs:
           set -e
           set -x
           LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
+          LEAD_TIME_HOUR=3
           if [ $LEAD_TIME_HOUR -eq 0 ]; then
             LEAD_TIME_HOUR_TEXT="1時間未満"
             LEAD_TIME_DAY_TEXT="0日"
