@@ -1,0 +1,23 @@
+name: Add label attached issue to project
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  add_issue_to_project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add issue to project
+        run: |
+          label_names="${{ toJSON(github.event.issue.labels.*.name) }}"
+          project_id="PVT_kwHOAJiWTs4ASybS"
+          issue_number="${{ github.event.issue.number }}"
+          owner_repo="${{ github.repository }}"
+
+          if echo "$label_names" | grep -q "HOGE 作業依頼"; then
+            echo "Adding issue to project"
+            echo "Issue added to project"
+          else
+            echo "Issue does not have the required label"
+          fi
