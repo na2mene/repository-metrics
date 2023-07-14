@@ -12,7 +12,7 @@ jobs:
         env:
           LABEL_NAME_A: ${{ github.event.label.name }}
           LABEL_NAME_B: ${{ github.event.issue.label }}
-          LABEL_NAME_C: ${{ github.event.issue.labels.*.name }}
+          LABEL_NAME_C: ${{ contains(github.event.issue.labels.*.name, 'HOGE 作業依頼') }}
         run: |
           echo "$LABEL_NAME_A"
           echo "$LABEL_NAME_B"
