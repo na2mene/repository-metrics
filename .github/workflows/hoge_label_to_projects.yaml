@@ -9,13 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add issue to project
+        env:
+          LABEL_NAME_A: ${{ github.event.label.name }}
+          LABEL_NAME_B: ${{ github.event.issue.label }}
         uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
         with:
           script: |
-            const a = ${{ github.event.label.name }};
-            console.log(a);
-            const b = ${{ github.event.issue.label }};
-            console.log(b);
+            console.log(process.env.LABEL_NAME_A);
+            console.log(process.env.LABEL_NAME_B);
             const labelNames = "${{ toJSON(github.event.issue.labels.*.name) }}";
             console.log(labelNames);
             const projectId = "PVT_kwHOAJiWTs4ASybS";
