@@ -2,7 +2,7 @@ name: Add label attached issue to project
 
 on:
   issues:
-    types: [opened]
+    types: [opened, reopened]
 
 jobs:
   add_issue_to_project:
