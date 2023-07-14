@@ -12,7 +12,7 @@ jobs:
         uses: actions/github-script@d7906e4ad0b1822421a7e6a35d5ca353c962f410
         with:
           script: |
-            const labelNames = "${{ github.event.pull_request.user.login }}";
+            const labelNames = "${{ toJSON(github.event.issue.labels.*.name) }}";
             console.log(labelNames);
             const projectId = "PVT_kwHOAJiWTs4ASybS";
             console.log(projectId);
