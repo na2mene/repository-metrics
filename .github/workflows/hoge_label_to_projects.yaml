@@ -1,0 +1,37 @@
+name: Add label attached issue to project
+
+on:
+  issues:
+    types: [opened, reopened]
+
+jobs:
+  add_issue_to_project:
+    runs-on: ubuntu-latest
+    if: contains(github.event.issue.labels.*.name, 'HOGE 作業依頼')
+    steps:
+      - name: Add issue to project
+        env:
+          ISSUE_ID: ${{ github.event.issue.node_id }}
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
+        run: |
+          echo $ISSUE_ID
+          OPERATION="mutation {
+            addProjectV2ItemById(input: {
+              projectId: \"PVT_kwHOAJiWTs4ASybS\"
+              contentId: \"$ISSUE_ID\"
+            }) {
+              item {
+                content {
+                  ... on Issue {
+                    id
+                    title
+                    url
+                  }
+                }
+              }
+            }
+          }"
+          
+          echo $OPERATION
+
+          gh api graphql -f query="$OPERATION"

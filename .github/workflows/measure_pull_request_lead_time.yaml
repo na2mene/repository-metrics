@@ -1,0 +1,70 @@
+name: Measure and comment on time from first commit to merge
+run-name: Measure ${{ github.actor }}'s time from first commit to merge
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [closed]
+
+jobs:
+  lead-time:
+    if: github.event.pull_request.merged == true && !startsWith(github.event.pull_request.base.ref, 'epic')
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      PR_NODE_ID: ${{ github.event.pull_request.node_id }}
+    permissions:
+      pull-requests: write
+    steps:
+      - name: checkout
+        # NOTE: https://github.com/actions/checkout/releases/tag/v3.5.2
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab
+        with:
+          fetch-depth: 0
+
+      - name: calculate lead time
+        id: calculate_lead_time
+        # NOTE: https://github.com/actions/github-script/releases/tag/v6.4.0
+        uses: actions/github-script@98814c53be79b1d30f795b907e553d8679345975
+        with:
+          script: |
+            const query = `
+              query($id: ID!) {
+                node(id: $id) {
+                  ... on PullRequest {
+                    mergedAt
+                    commits(first: 1) {
+                      nodes {
+                        commit {
+                          authoredDate
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            `;
+            const result = await github.graphql(query, {id: process.env.PR_NODE_ID});
+            const mergedAt = new Date(result.node.mergedAt);
+            const authoredDate = new Date(result.node.commits.nodes[0].commit.authoredDate);
+            const leadTimeHour = Math.round((mergedAt - authoredDate) / 3600000);
+            return leadTimeHour;
+
+      - name: comment
+        run: |
+          set -x
+          LEAD_TIME_HOUR=${{ steps.calculate_lead_time.outputs.result }}
+          LEAD_TIME_HOUR="3"
+          if [ $LEAD_TIME_HOUR -eq 0 ]; then
+            LEAD_TIME_HOUR_TEXT="1時間未満"
+            LEAD_TIME_DAY_TEXT="0日"
+          else
+            LEAD_TIME_HOUR_TEXT="${LEAD_TIME_HOUR}時間"
+            LEAD_TIME_DAY=$(( ${LEAD_TIME_HOUR} / 24 ))
+            LEAD_TIME_DAY_TEXT="${LEAD_TIME_DAY}日"
+          fi
+          COMMENT_TEXT="@${{ github.event.pull_request.user.login }} \n## 初回コミットからdevelopへマージされるまでのリードタイム\n${LEAD_TIME_DAY_TEXT} (${LEAD_TIME_HOUR_TEXT})でした、お疲れ様でした :ok2:"
+          echo "COMMENT_TEXT: ${COMMENT_TEXT}"
+          gh pr comment ${{ github.event.pull_request.html_url }} -b "$(echo -e "${COMMENT_TEXT}")"
+          echo $?
