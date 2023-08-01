@@ -13,14 +13,17 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
+      - name: Set up Ruby 3.1
+        uses: ruby/setup-ruby@250fcd6a742febb1123a77a841497ccaa8b9e939
         with:
           ruby-version: 3.1
 
-      - run: gem install git-pr-release -v "2.2.0"
-      - run: git-pr-release
+      - name: create-pr
         env:
           GIT_PR_RELEASE_TOKEN: ${{ secrets.PERSONAL_GITHUB_TOKEN }}
           GIT_PR_RELEASE_BRANCH_PRODUCTION: main
           GIT_PR_RELEASE_BRANCH_STAGING: develop
           GIT_PR_RELEASE_LABELS: release
+        run: |
+          gem install git-pr-release -v "2.2.0"
+          git-pr-release --json
